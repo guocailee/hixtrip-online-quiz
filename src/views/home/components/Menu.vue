@@ -2,32 +2,29 @@
 import { onMounted, ref } from 'vue'
 import MenuItem from './MenuItem.vue'
 import { Org } from '../../../api/org'
+import { MenuItemType } from '../Home.vue'
 
 const props = defineProps<{
-  org?: Org[]
+  org?: MenuItemType[],
+  currentORG?: string
 }>()
 const emit = defineEmits<{
   (e: 'handleClick', id: string): void
 }>()
 
 function handleClick(id: string) {
-    console.log('qqq')
     emit('handleClick', id)
 }
-onMounted(async () => {
-    emit('handleClick', '1')
-})
 </script>
 
 <template>
   <div class="layout">
     <MenuItem :key="index" v-for="(item, index) in org">
-        <span class="item-title" v-if="!item.child" @click="handleClick(item.id)">{{item.name}}</span>
+        <span class="item-title" v-if="!item.child && !item.show" @click="handleClick(item.id)">{{item.name}}</span>
 
         <template v-else>
-            <span >{{item.name}}</span>
-            <!-- 递归操作 -->
-            <Menu :org="item.child" @handleClick="handleClick"></menu>
+            <span :class="{'item-title': true, 'choosed': item.show}" @click="handleClick(item.id)">{{item.name}}</span>
+            <Menu v-show="item.show" :org="item.child" @handleClick="handleClick"></menu>
       </template>
     </MenuItem>
   </div>
@@ -44,5 +41,9 @@ onMounted(async () => {
 }
 .item-title {
 
+}
+.choosed {
+    color: aqua;
+    font-weight: bold;
 }
 </style>
