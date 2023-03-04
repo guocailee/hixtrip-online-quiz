@@ -1,34 +1,34 @@
-<script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import userApi from './api/user'
-import orgApi from './api/org'
-
-let user = ref<any>()
-let org = ref<any>()
-onMounted(() => {
-  userApi.query({}).then((res) => (user.value = res))
-  orgApi.query().then((res) => (org.value = res))
-})
-</script>
-
 <template>
   <div>
-    {{ org }}
-    {{ user }}
+    <KeepAlive>
+      <el-tabs v-model="activeName" class="main-tabs">
+        <el-tab-pane label="成员管理" name="user">
+          <sys-user />
+        </el-tab-pane>
+        <el-tab-pane label="团队管理" name="org">团队管理</el-tab-pane>
+        <el-tab-pane label="职务维护" name="position">职务维护</el-tab-pane>
+      </el-tabs>
+    </KeepAlive>
   </div>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+
+import SysUser from '@/view/sysUser/index.vue'
+let activeName = ref<string>('user');
+
+
+</script>
+
+<style scoped lang="less"></style>
+
+<style>
+.el-tabs__header {
+  margin: 0 5px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+.el-main {
+  --el-main-padding: 0;
 }
 </style>
