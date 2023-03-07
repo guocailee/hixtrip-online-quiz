@@ -19,7 +19,7 @@ function clickOrg(id: string){
     <org-tree class="aside" ref="orgRef" @clickOrg="clickOrg"></org-tree>
 
     <div class="main">
-      <div>{{ keyword }}
+      <div>
         <input class="search" type="text" v-model.lazy="keyword" placeholder="输入关键字搜索">
         <UserTable :orgid="orgId" :keyword="keyword"></UserTable>
       </div>
