@@ -1,21 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import userApi from './api/user'
-import orgApi from './api/org'
-
-let user = ref<any>()
-let org = ref<any>()
-onMounted(() => {
-  userApi.query({}).then((res) => (user.value = res))
-  orgApi.query().then((res) => (org.value = res))
-})
+import Index from './pages/Index.vue';
 </script>
 
 <template>
-  <div>
-    {{ org }}
-    {{ user }}
-  </div>
+  <Index />
 </template>
 
 <style scoped>
