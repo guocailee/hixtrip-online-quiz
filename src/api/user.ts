@@ -1,7 +1,8 @@
 import delay from '../utils/delay'
 interface User {
   id: string
-  name: string
+  name: string,
+  nickname: string,
 }
 const getUserData = (): User[] => {
   const count = Math.floor(Math.random() * 20)
@@ -11,6 +12,7 @@ const getUserData = (): User[] => {
       return {
         id: Math.random() + '',
         name: (Math.random() + 1).toString(36).substring(7),
+        nickname: (Math.random() + 1).toString(36).substring(7),
       }
     })
 }
