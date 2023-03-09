@@ -1,24 +1,22 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive } from "vue";
-import userApi from "./api/user";
+// import userApi from "./api/user";
 import orgApi from "./api/org";
 import OrgTree from "./components/OrgTree.vue";
 import UserTable from "./components/UserTable.vue";
 
-let user = ref<any>();
+// let user = ref<any>();
 let org = ref<any>();
-let curOrg = reactive({});
+const userTableRef = ref();
+
 let activeName = ref<string>("成员管理");
 onMounted(() => {
   // userApi.query({}).then((res) => (user.value = res));
   orgApi.query().then((res) => (org.value = res));
 });
 const handleNodeClick = ({ data, node }) => {
-  userApi.query({}).then((res) => (user.value = res));
-  curOrg = {
-    parentName: node.parent.data.name,
-    name: node.data.name,
-  };
+  userTableRef.value.getUserData(data);
+  userTableRef.value.getCurrentOrg(node);
 };
 </script>
 
@@ -28,7 +26,7 @@ const handleNodeClick = ({ data, node }) => {
       <el-tab-pane label="成员管理" name="成员管理">
         <div class="member-manage">
           <OrgTree :org="org" @node-click="handleNodeClick" />
-          <UserTable :user="user" :curOrg="curOrg" />
+          <UserTable ref="userTableRef" />
         </div>
       </el-tab-pane>
       <el-tab-pane label="团队管理" name="团队管理">团队管理</el-tab-pane>

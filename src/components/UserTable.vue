@@ -1,55 +1,56 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, reactive } from "vue";
 import { Search } from "@element-plus/icons-vue";
+import userApi from "../api/user";
 const props = defineProps({
-  user: [],
   curOrg: {},
 });
+let user = ref([]);
+let curOrg = reactive({
+  parentName: "",
+  name: "",
+  id: "",
+});
+let input = ref("");
+const getUserData = (params) => {
+  if (input.value) input = "";
+  userApi.query({ orgId: params.id }).then((res) => (user.value = res));
+};
+const getCurrentOrg = (node) => {
+  curOrg.parentName = node.parent.data.name;
+  curOrg.name = node.data.name;
+  curOrg.id = node.data.id;
+};
 
-let userData = computed({
-  get() {
-    return props.user;
-  },
-  set(val) {
-    return val;
-  },
-});
-const userLength = computed(() => {
-  return props.user && props.user.length;
-});
-let value = ref();
 const handleChange = (val) => {
   if (!val) {
-    userData = props.user;
+    getUserData(curOrg);
   } else {
-    userData = props.user.filter((item) => item.id === val);
+    user.value = user.value.filter((item) => item.id === val);
   }
 };
-watch(
-  () => props.user,
-  (val) => {
-    value.value = "";
-    handleChange("");
-  }
-);
+defineExpose({
+  getUserData,
+  getCurrentOrg,
+});
 </script>
 <template>
   <div class="user-table">
-    <el-breadcrumb separator="/" v-show="Object.keys(props.curOrg).length > 0">
-      <el-breadcrumb-item>{{ props.curOrg.parentName }}</el-breadcrumb-item>
-      <el-breadcrumb-item>{{ props.curOrg.name }}</el-breadcrumb-item>
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item>{{ curOrg.parentName }}</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ curOrg.name }}</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="my-table">
       <div class="table-tool">
         <el-select
-          v-model="value"
+          v-model="input"
           clearable
           filterable
           placeholder="搜索"
           @change="handleChange"
         >
           <el-option
-            v-for="item in props.user"
+            v-for="item in user"
             :key="item.id"
             :label="item.name"
             :value="item.id"
@@ -70,9 +71,9 @@ watch(
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <div style="margin-left: 20px">{{ userLength }} 个成员</div>
+        <div style="margin-left: 20px">{{ user.length || 0 }} 个成员</div>
       </div>
-      <el-table border :data="userData" style="width: 100%">
+      <el-table border :data="user" style="width: 100%">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="name" sortable label="姓名" />
         <el-table-column prop="nickname" sortable label="用户名" />

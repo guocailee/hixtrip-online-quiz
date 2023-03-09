@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import userApi from "../api/user";
+import orgApi from "../api/org";
 const props = defineProps({
   org: [],
 });
@@ -8,11 +8,13 @@ const emits = defineEmits(["node-click"]);
 const treeProps = reactive({
   label: "name",
 });
+let curNodeData = {};
 const loadNode = (node, resolve) => {
   if (node.level > 1) return resolve([]);
-  userApi.query({}).then((res) => resolve(res));
+  orgApi.query(curNodeData.id).then((res) => resolve(res));
 };
 const handleNodeClick = (data, node) => {
+  curNodeData = data;
   if (node.level === 1) return;
   emits("node-click", { data, node });
 };
