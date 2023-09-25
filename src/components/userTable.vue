@@ -1,7 +1,7 @@
 <template>
     <div class="user-table">
         <div class="user-table_filter">
-            <input type="text" v-model="filterKey" placeholder="输入用户名或者ID搜索">
+            <input type="text" v-model="filter.key" placeholder="输入用户名或者ID搜索" @input="filter.change">
         </div>
         <table style="border: 1px solid black">
             <thead>
@@ -11,8 +11,8 @@
                 </tr>
             </thead>
             <tbody>
-                <div v-if="filterList.length == 0">暂无数据</div>
-                <tr v-for="( item, index ) in filterList" :key="index">
+                <div v-if="list.length == 0">暂无数据</div>
+                <tr v-for="( item, index ) in list" :key="index">
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
                 </tr>
@@ -22,12 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType } from 'vue'
-
-interface ListCell {
-  id: string
-  name: string
-}
+import { ref, computed, PropType, reactive } from 'vue'
+import { debounce } from "./../utils/delay";
 
 const props = defineProps({
     list: {
@@ -35,16 +31,24 @@ const props = defineProps({
         default: () => {
             return []
         }
-    },
-    modelValue: {
-        type: String
     }
 })
 
-const filterKey = ref<string>('')
+const emits = defineEmits([ 'onChange' ])
 
-const filterList = computed(() => {
-    return props.list.filter((item: ListCell) => item.name.indexOf(filterKey.value) > -1 || item.id.indexOf(filterKey.value) > -1)
+const filter = reactive<any>({
+    key: '',
+    change: debounce((e: string) => {
+        emits('onChange', filter.key)
+    }, 400)
+})
+
+function getData() {
+    emits('onChange', filter.key)
+}
+
+defineExpose({
+    getData
 })
 
 </script>

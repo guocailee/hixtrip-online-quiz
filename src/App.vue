@@ -6,6 +6,11 @@ import { onMounted, ref, reactive } from "vue";
 import userApi from "./api/user";
 import orgApi from "./api/org";
 
+interface ListCell {
+  id: string;
+  name: string;
+}
+
 let user = ref<any>();
 let org = ref<any>();
 
@@ -15,19 +20,25 @@ onMounted(() => {
 });
 
 const treeData = reactive<any>({
-  key: '',
-  change: (item: any) => {
-    userApi.query({ orgId: item.id }).then((res) => (user.value = res));
+  key: "",
+  change: (item: ListCell) => {
+    // 调用userTable组件方法
+    userTableRef.value.getData();
+  },
+});
 
-    console.info("org", org.value)
-  }
-})
+const userTableRef = ref<any>();
+function tableChange(val: string) {
+  userApi.query({ orgId: treeData.id }).then((res) => {
+    user.value = res?.filter((item: ListCell) => item.name.indexOf(val) > -1 || item.id.indexOf(val) > -1) ?? "";
+  });
+}
 </script>
 
 <template>
   <div class="content">
     <OrgTree v-model="treeData.key" :list="org" @onChange="treeData.change"></OrgTree>
-    <UserTable v-model="treeData.key" :list="user"></UserTable>
+    <UserTable ref="userTableRef" :list="user" @onChange="tableChange"></UserTable>
   </div>
 </template>
 

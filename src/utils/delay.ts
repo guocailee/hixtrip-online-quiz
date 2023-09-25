@@ -4,4 +4,20 @@ function delay<T>(data: T, time: number = 100): Promise<T> {
   })
 }
 
-export default delay
+// 防抖函数
+function debounce(func: Function, delay: number) {
+  let timeoutId: any = null;
+
+  return function(...args: any) {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
+
+export {
+  delay,
+  debounce
+}
