@@ -1,8 +1,7 @@
 <template>
   <div>
     <h2>用户表格</h2>
-    <input type="text" v-model="searchKeyword" placeholder="请输入搜索关键字" />
-    <button @click="searchUsers">搜索</button>
+    <input type="text" v-model="searchKeyword" @input="searchUsers" placeholder="请输入搜索关键字" />
     <table>
       <thead>
         <tr>
@@ -27,6 +26,7 @@ import userApi from "../api/user";
 let searchKeyword = ref<String>("");
 let users = ref<any>();
 let filteredUsers = ref<any>();
+let timer = ref<any>(null);
 
 const props = defineProps({
   pid: Number,
@@ -36,17 +36,34 @@ const props = defineProps({
 watch(
   () => props.pid,
   (val) => {
-    userApi.query({}).then((res) => {
-      users.value = res;
-      filteredUsers.value = res;
-    });
+    let _params = {
+      id:val
+    }
+
+    getData(_params)
   }
 );
 
-// 关键字搜索
-const searchUsers = () => {
-  filteredUsers.value = users.value.filter((user: any) => {
-    return user.name.toLowerCase().includes(searchKeyword.value.toLowerCase());
+const getData = (_params:any) => {
+  userApi.query(_params).then((res) => {
+    users.value = res;
+    filteredUsers.value = res;
   });
+}
+
+
+// 关键字搜索实现防抖
+const searchUsers = () => {
+  if (timer) {
+    clearTimeout(timer);
+  }
+
+  timer = setTimeout(() => {
+    timer = null;
+    filteredUsers.value = users.value.filter((user: any) => {
+      return user.name.toLowerCase().includes(searchKeyword.value.toLowerCase());
+    });
+  }, 500);
+  
 };
 </script>
