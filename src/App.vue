@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import userApi from './api/user'
-import orgApi from './api/org'
+import OrgTree from './components/OrgTree.vue';
+import UserTable from './components/UserTable.vue';
 
-let user = ref<any>()
-let org = ref<any>()
-onMounted(() => {
-  userApi.query({}).then((res) => (user.value = res))
-  orgApi.query().then((res) => (org.value = res))
-})
+
+let pid = ref<any>(0)
+
+const loadChildNodes = (id:Number)=> {
+  pid.value = id
+}
 </script>
 
 <template>
   <div>
-    {{ org }}
-    {{ user }}
+    <div>
+      <org-tree @load-child-nodes="loadChildNodes"></org-tree>
+      <user-table :pid="pid"></user-table>
+    </div>
   </div>
 </template>
 
